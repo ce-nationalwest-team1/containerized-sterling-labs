@@ -22,6 +22,7 @@ In this section of the lab, we check on the Sterling B2Bi installation that it c
 1.2. From the administrator section menu on the left, click on the 'Networking' drop down menu and click on 'Routes', and at the top of the dashboard, select the 'sterling-b2bi-dev01-app' project. 
 <img width="1678" alt="Screenshot 2024-10-04 at 1 25 31 PM" src="https://github.com/user-attachments/assets/efa494a5-76cb-45e9-a240-7779148fad95">
 
+
 1.3. Search for 'dashboard' in the filtering options. Select the location url to access the Sterling B2Bi dashboard.
 <img width="1676" alt="Screenshot 2024-10-04 at 1 25 03 PM" src="https://github.com/user-attachments/assets/ead8c74a-edb4-4d16-a763-daafb0a382d6">
 
@@ -30,10 +31,12 @@ In this section of the lab, we check on the Sterling B2Bi installation that it c
       username = admin
       password = password
 <img width="1233" alt="Screenshot 2024-10-04 at 1 26 13 PM" src="https://github.com/user-attachments/assets/461ca52a-2252-488d-9650-64e16da2bf40">
+
 ### Verify running version of Sterling B2B Integrator
 
 1.5. Navigate to the Support page, indicated by the <img width="27" alt="Screenshot 2024-10-04 at 4 24 31 PM" src="https://github.com/user-attachments/assets/b5fbd0a4-b9c3-430b-8d57-7e9cd6a7d6cb"> icon. 
 <img width="1055" alt="Screenshot 2024-10-04 at 4 36 10 PM" src="https://github.com/user-attachments/assets/5e4660bf-3b87-4a2c-8f07-caea0286c23c">
+
 
 1.6. Navigate to the bottom of the screen to identify the version of running version of Sterling B2Bi. 
 <img width="208" alt="Screenshot 2024-10-04 at 4 36 39 PM" src="https://github.com/user-attachments/assets/77705f2d-fae3-40ff-bcb9-b3d170dea6e5">
