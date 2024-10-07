@@ -5,13 +5,13 @@ In this section of the lab, we check on the Sterling B2Bi installation that it c
 
 0.1 (login to Openshift)
 
-0.2 (look at the different namespaces/projects - db2, mq, b2bi - that were deployed)
+0.2 (look at the different namespaces/projects - db2, mq, app - that were deployed)
 
 0.3 (go to db2 and mq namespaces one at a time and look at running pods, services for each)
 
-0.4 (go to b2bi namespace and show running pods, secrets (show db credentials), services, routes)
+0.4 (go to app namespace and show running pods, secrets (show db credentials), services, routes)
 
-0.5 (in routes, click on b2bi route to bring it up on browser)
+0.5 (in routes, click on app route to bring it up on browser)
 
 ---
 
@@ -28,7 +28,7 @@ In this section of the lab, we see how RedHat OpenShift performs self healing wh
 
 3.1. To delete the pod, login to your cluster with your user credentials by browsing to the `OpenShift web console`.  
 
-3.2. From the administrator section menu on the left, clink on the `Workload` drop down menu and click on Pods, and at the top, select the `sterling-b2bi-dev01-app` project.  
+3.2. From the administrator section menu on the left, click on the `Workload` drop down menu and click on Pods, and at the top, select the `sterling-b2bi-dev01-app` project.  
 
 3.3. Select one of the `s0-b2bi` pods to delete and end of the row, click the vertical dot menu and click delete. 
 
@@ -53,14 +53,14 @@ In this section of the lab, we see how Horizontal Pod Autoscaling works in the O
 The deployments settings below affect the load, which are the number of pods and the CPU usage. 
 
 ### Increase the Relicca to 2 and Enable Autoscaling
-Before we change the settings to simulate the load,  we will increse the relicca to 2 and enable autoscaling.  Follow the steps below:
+Before we change the settings to simulate the load,  we will increse the replica to 2 and enable autoscaling.  Follow the steps below:
 
 4.1.
 
   ```bash
-  cd ~/$GIT_ORG/multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
+  cd /tmp
   ```
-4.2. Inside `values.yaml`, find & set the `replicaCount` and `enabled` fields for both the `asi` and `ac` Sterling componets:
+4.2. Inside `myb2bi_values-<uid>.yml`, find & set the `replicaCount` and `enabled` fields for both the `asi` and `ac` Sterling componets:
 
   ```yaml
   ibm-sfg-prod:
@@ -167,13 +167,13 @@ git push
 ---
 
 ## **5. Upgrade/Roll Back**
-In this section of the lab, we see how you can upgrade and roll back versions using the GitOps method.
+In this section of the lab, we see how you can upgrade with using helm.
 
-Using the GitOps method we see how the upgrade process is shorten.  We are also able to roll back to previous version if there is an issue.  The GitOps method also provides for traceability as to when and who made the change in the commit record in GitHub.
+Using the `helm upgrade` command we see how the upgrade process is shortend.
 
-5.1. To upgrade the version, first go to the IBM Sterling Console application and check the current version, which is version `6.1.0.0`. 
+5.1. To upgrade the version, first go to the IBM Sterling Console application and check the current version, which is version `6.2.0.2`. 
 
-![v-1](https://github.com/user-attachments/assets/acdb13ae-28f3-48b5-a1be-59689444ca61)
+![v-2](../images/sterling%20V6.2.0.2.png)
 
 
 5.2. Now go update the `values.yaml` file in your repo as follows:
