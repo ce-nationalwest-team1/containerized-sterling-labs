@@ -48,121 +48,27 @@ After the pod is deleted, the pod is reinstantiated and processing work as part 
 ---
 
 ## **4. Automatically Scale a Pod**
-In this section of the lab, we see how Horizontal Pod Autoscaling works in the OpenShift cluster.  We will see how the Sterling B2B Integrator instance dynamically scales based on the load on the system.  For this lab we will simulate the load on the system by modifing the deployment paramaters via the GitOps repo. Sterling B2B Integrator can scale up and down manually or automatically.
+In this section of the lab, we see how Horizontal Pod Autoscaling works in the OpenShift cluster.  We will see how the Sterling B2B Integrator instance can manually or dynamically scale based on the load on the system.  For this lab we will manually modify pod scaling in the OpenShift console.
 
-The deployments settings below affect the load, which are the number of pods and the CPU usage. 
 
-### Increase the Relicca to 2 and Enable Autoscaling
-Before we change the settings to simulate the load,  we will increse the replica to 2 and enable autoscaling.  Follow the steps below:
+### Increase the Replica to 2
 
-4.1.
+4.1. Log into the OpenShift console if you have not already.
 
-  ```bash
-  cd /tmp
+4.2 From the administrator section menu on the left, click on the Workload drop down menu and click on StatefulSets, and at the top, select the `sterling-b2bi-dev01-app` project.
+
+4.3 Click on the `s0-b2bi-ac-server` StatefulSet(SS) to open the details page.  In the top menu of the SS select `YAML`
+
+4.4 Do a <CTRL + F>  search for `replicas` to find where to edit and change `replicas` from line 902 to 2
+
+```yaml
+spec:
+  replicas: 1     <--- change to 2
   ```
-4.2. Inside `myb2bi_values-<uid>.yml`, find & set the `replicaCount` and `enabled` fields for both the `asi` and `ac` Sterling componets:
 
-  ```yaml
-  ibm-sfg-prod:
-    ....
-    asi:
-      replicaCount: 1     <--- change to 2
-      ....
-      autoscaling:
-        enabled: false    <----change to true
-        minReplicas: 2
-        maxReplicas: 4
-        targetCPUUtilizationPercentage: 60
-  ```
-  ```yaml
-  ibm-sfg-prod:
-    ....
-    ac:
-      replicaCount: 1     <--- change to 2
-      ....
-      autoscaling:
-        enabled: false    <----change to true
-        minReplicas: 2
-        maxReplicas: 4
-        targetCPUUtilizationPercentage: 60
-  ```
-      
-4.3. Now deploy the changes by committing and pushing the changes to your `multi-tenancy-gitops-services` repository:
-```bash
-#change to the `multi-tenancy-gitops-services` directory
-cd ~/$GIT_ORG/multi-tenancy-gitops-services
+4.5 Click save and navigate to pods to observe the scaling
 
-# Verify the changes, and add the files that have been changed
-git status
-git add -u
- 
-# Finally commit and push the changes
-git commit -m "increase replicas and enable auto scaling"
-git push
-# Input your github username when prompted for Username
-# Input the Github Token that you had created earlier when prompted for Password
-```
-
-4.4. Sync the changes in Argo  via the `ibm-sfg-b2bi-prod` argo application
-
-### Simulate a Load on the System to Trigger Pod Autoscaling
-Now, to simulate a load on the system so that we trigger the auto scaling of pods, we will lower the target CPU utiliziation by modifying the `values.yaml` file in GitOps repo.    Follow the steps below:
-
-4.5. 
-  ```bash
-  cd ~/$GIT_ORG/multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
-  ```
-4.6. Inside `values.yaml`, find & set the `replicaCount` and `enabled` fields for both the `asi` and `ac` Sterling componets:
-
-  ```yaml
-  ibm-sfg-prod:
-    ....
-    asi:
-      replicaCount: 2   
-      ....
-      autoscaling:
-        enabled: true  
-        minReplicas: 2
-        maxReplicas: 4
-        targetCPUUtilizationPercentage: 60    <----change to 20
-  ```
-  ```yaml
-  ibm-sfg-prod:
-    ....
-    ac:
-      replicaCount: 2 
-      ....
-      autoscaling:
-        enabled: true  
-        minReplicas: 2
-        maxReplicas: 4
-        targetCPUUtilizationPercentage: 60    <----change to 20
-  ```
-      
-4.7. Now deploy the changes by committing and pushing the changes to your `multi-tenancy-gitops-services` repository:
-```bash
-#change to the `multi-tenancy-gitops-services` directory
-cd ~/$GIT_ORG/multi-tenancy-gitops-services
-
-# Verify the changes, and add the files that have been changed
-git status
-git add -u
- 
-# Finally commit and push the changes
-git commit -m "lower the target CPU utlization to simulate load."
-git push
-# Input your github username when prompted for Username
-# Input the Github Token that you had created earlier when prompted for Password
-```
-
-4.8. Sync the changes in Argo via the `ibm-sfg-b2bi-prod` argo application
-
-4.9. Now go to the Redhat Openshift Console and observe the number of pods for the `asi` and `ac` Sterling componets. If a pod starts using more than 20% of the allocated CPU the autoscaler is going to spin up a new pod.
-    
-   ![scaleup](https://github.com/user-attachments/assets/b87f4b71-d742-439e-9e20-1974e56d137d)
-   
-  
-4.10. Next, go to the Openshift console and on the left go to the drop down and search under HorizontalPodAutoscaler, you will see the new `asi` and `ac` autoscalers.
+   ![scaleup](../images/ac-server-scaling.png)
 
 ---
 
@@ -176,45 +82,56 @@ Using the `helm upgrade` command we see how the upgrade process is shortend.
 ![v-2](../images/sterling%20V6.2.0.2.png)
 
 
-5.2. Now go update the `values.yaml` file in your repo as follows:
+5.2. Now let's go back to our bastion servers and update the `values.yaml` :
 
 ```bash
-cd ~/$GIT_ORG/multi-tenancy-gitops-services/instances/ibm-sfg-b2bi
+cd /tmp
 ```
 
-5.3.  Inside `values.yaml`, find & set the tag from `6.2.0.2` to `6.2.0.3`
+5.3. Find the name of your `values.yaml` file.  The file name will look like `myb2bi_values-<id>.yml`
+
+```bash
+ls
+```
+
+
+5.4.  Inside `myb2bi_values-<id>.yml`, find & set the tag from `6.2.0.2` to `6.2.0.3` and change `enabled` to false under `dataSetup`.  Your files should already be updated
 ```yaml
-ibm-sfg-prod:
 global:
+...
 image:
-  repository: cp.icr.io/cp/ibm-sfg/sfg
-  tag: 6.2.0.2                           <----change to 6.2.0.3       
+  repository: cp.icr.io/cp/ibm-b2bi/b2bi
+  tag: 6.2.0.2                          <----change to 6.2.0.3   
+...
+dataSetup:
+  enabled: true                         <----change to false
+  upgrade: false    
 ```
 
-5.4. Now deploy the changes by committing and pushing the changes to your `multi-tenancy-gitops-services` repository:
+5.5. Download the latest helm chart 
 ```bash
-#change to the `multi-tenancy-gitops-services` directory
-cd ~/$GIT_ORG/multi-tenancy-gitops-services
-
-# Verify the changes, and add the files that have been changed
-git status
-git add -u
- 
-# Finally commit and push the changes
-git commit -m "update to version 6.1.0.1"
-git push
-# Input your github username when prompted for Username
-# Input the Github Token that you had created earlier when prompted for Password
+wget https://github.com/IBM/charts/raw/master/repo/ibm-helm/ibm-b2bi-prod-3.0.5.tgz
 ```
-5.5. Sync the changes in Argo  via the `ibm-sfg-b2bi-prod` argo application. Argocd will detect these changes and create a new pod with the latest version.
 
-  ![pods-termination-v0](https://github.com/user-attachments/assets/8800b414-1bc5-45d0-9487-2e99c95afb68)
-        
-  ![pods-version2](https://github.com/user-attachments/assets/86929a86-ea3e-4b75-902a-e99c1fc92ef1)
+5.6. Start the upgrade
+```bash
+helm upgrade --timeout 120m0s -f /tmp/myb2bi_values-<id>.yml -n sterling-b2bi-dev01-app s0 /tmp/ibm-b2bi-prod-3.0.5.tgz
+```
+
+    >💡 **NOTE**     
+    > You may see a warning:
+    > "Kubernetes configuration file is group-readable. This is insecure. Location: /tmp/ocp/cluster/auth/kubeconfig"
+    > This should not affect the upgrade
+
+Once the output of the process says `STATUS: deployed` we can go back to the console and view the pods.
 
 5.6. To verify the version, simply go to the Sterling app menu and click on the support button in the Sterling Console.**  
 
-![newerversion](https://github.com/user-attachments/assets/10ad01f1-fc31-4d7a-a771-df5d943f976b)
+![newerversion](../images/sterling%20v6.2.0.3.png)
+
+We can also verify by going back to our pods and clicking on one of them.  Scroll down to the Containers section and the container image the pod is running.
+
+![container-image](../images/sterling-container-image-version.png)
 
 
 ---
